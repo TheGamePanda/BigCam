@@ -1,6 +1,5 @@
 package uk.ac.solent.bigcam
 
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraDevice
 import android.support.v7.app.AppCompatActivity
@@ -14,14 +13,13 @@ import kotlinx.android.synthetic.main.camera_activity.*
 import java.io.File
 import java.security.Timestamp
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteStatement
+import android.widget.Toast
 
 class CameraActivity : AppCompatActivity() {
 
     lateinit var fotoapparat  : Fotoapparat
-    override fun onCreate(savedInstanceState: Bundle?, db : SQLiteDatabase) {
-        db.execSQL ("CREATE TABLE IF NOT EXISTS People (Id INTEGER PRIMARY KEY, Firstname VARCHAR(255), Lastname VARCHAR(255), Age INTEGER)")
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.camera_activity)
         fotoapparat = Fotoapparat(
@@ -55,9 +53,16 @@ class CameraActivity : AppCompatActivity() {
         )
 
         takePhoto.setOnClickListener {
-            fotoapparat
+            val filepath = System.currentTimeMillis()
+            try{
+                fotoapparat
                     .takePicture()
-                    .saveToFile(File("${Environment.getExternalStorageDirectory().getAbsolutePath()}/DCIM/PHOTO-${System.currentTimeMillis()}.jpg"))
+                    .saveToFile(File("${Environment.getExternalStorageDirectory().getAbsolutePath()}/DCIM/PHOTO_${filepath}.jpg"))
+                    Toast.makeText(this,"Saved to ${Environment.getExternalStorageDirectory().getAbsolutePath()}/DCIM/PHOTO_${filepath}.jpg", Toast.LENGTH_SHORT).show()
+            }
+            catch(e: Exception){
+                Toast.makeText(this,"NOT SAVED", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
